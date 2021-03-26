@@ -102,7 +102,7 @@ output application/json
 	</error-handler>
 	<error-handler name="error-handler-default" doc:id="a18cb5c2-33c4-4f94-a626-9524a5505cc2" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2f7aad0a-0626-42f4-b857-a12f6d676941" >
-			<set-payload value="#[output application/json&#10;---&#10;{&#10;	correlationId: correlationId,&#10;	message: p('messages.responses.error.general'),&#10;	detail: error.detailedDescription&#10;}]" doc:name="General Error Response" doc:id="5637bbd1-cb51-4750-b96d-2e01a32c5303" />
+			<set-payload value="#[output application/json&#10;---&#10;{&#10;	trackingId: vars.trackingId,&#10;	message: p('messages.responses.error.general'),&#10;	detail:&#10;		if ((error.muleMessage.typedValue.detail default '') != '')&#10;			error.muleMessage.typedValue.detail&#10;		else&#10;			error.detailedDescription&#10;}]" doc:name="General Error Response" doc:id="5637bbd1-cb51-4750-b96d-2e01a32c5303" />
 		</on-error-propagate>
 	</error-handler>
 </mule>
