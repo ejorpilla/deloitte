@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<sub-flow name="sys-db-get-users:flow" doc:id="a9238f32-9cfb-4300-8026-2681290f36fb" >
 		<logger level="INFO" doc:name="Start" doc:id="b7bffb92-9831-4b92-9d7e-ee2ca65b5b90" message="Start Get Users" category="${log.info}"/>
 		<db:select doc:name="Users" doc:id="c8a33695-f8d7-443c-826f-6767dc8af6bf" config-ref="Database_Config_MySQL">
-			<db:sql ><![CDATA[${queries.user.select-users}]]></db:sql>
+			<db:sql><![CDATA[${queries.user.select-users}]]></db:sql>
 		</db:select>
 		<set-payload value="#[output application/json&#10;---&#10;payload]" doc:name="JSON Response" doc:id="347dcd5d-ab53-4719-85d4-b42dd6e2f0a9" />
 		<logger level="INFO" doc:name="End" doc:id="81ee5f13-2896-4ca2-8063-754e1056ae92" message="End Get Users: #[payload]" category="${log.info}" />

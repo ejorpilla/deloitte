@@ -3,10 +3,10 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-	<flow name="impl-user-get-user:subflow" doc:id="1b88a0da-80a1-4632-bd80-c0dbeb0693bc" >
-		<logger level="INFO" doc:name="Start" doc:id="0378c2f3-32f8-435f-94ed-d09789747cd1" message="Start Create User #[payload]" category="${log.info}" />
+	<flow name="impl-user-get-user:flow" doc:id="1b88a0da-80a1-4632-bd80-c0dbeb0693bc" >
+		<logger level="INFO" doc:name="Start" doc:id="0378c2f3-32f8-435f-94ed-d09789747cd1" message="Start Get User" category="${log.info}" />
 		<flow-ref doc:name="sys-user-api-get-user" doc:id="d6029648-85ca-40f3-96e8-be9da26afe15" name="sys-user-api-get-user" />
-		<logger level="INFO" doc:name="End" doc:id="0ee244f1-4363-45a7-85d2-697db306eeaf" message="End Create User #[payload]" category="${log.info}" />
+		<logger level="INFO" doc:name="End" doc:id="0ee244f1-4363-45a7-85d2-697db306eeaf" message="End Get User #[payload]" category="${log.info}" />
 		<error-handler >
 			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6119ba4b-a946-4477-8331-00126deeb4c0">
 					<logger level="ERROR" doc:name="User Not Found" doc:id="0ad743cc-e881-487a-a5b0-710d70c75952" message="User Not Found #[vars.username]" category="${log.error}" />
@@ -15,16 +15,24 @@
 				</on-error-continue>
 		</error-handler>
 	</flow>
+	<sub-flow name="impl-user-get-users:sub-flow" doc:id="3c533aca-64b6-47c2-8126-98d8d5ea636e" >
+		<logger level="INFO" doc:name="Start" doc:id="505c81c9-129a-4fe9-913c-604b00efaf82" message="Start Get Users" category="${log.info}" />
+		<flow-ref doc:name="sys-user-api-get-users" doc:id="9d29f3fc-334f-4a00-b4e0-922f646a0e66" name="sys-user-api-get-users" />
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	users: payload&#10;}]" doc:name="Set Response Payload" doc:id="b85bb5bf-77b3-45b7-9e12-b9dd527e96fc" />
+		<logger level="INFO" doc:name="End" doc:id="47f05d9d-0571-42b7-8104-9e560fcff45f" message="End Get Users #[payload]" category="${log.info}" />
+	</sub-flow>
 	<sub-flow name="impl-user-create-user:subflow" doc:id="25de2d86-0762-415c-a5fd-7312b4ca57f5" >
 		<logger level="INFO" doc:name="Start" doc:id="74e006ba-e7d7-402c-872d-863bfc5ff49b" message="Start Create User #[payload]" category="${log.info}" />
 		<set-payload value="#[output application/json&#10;---&#10;[] + payload]" doc:name="Set Create User Payload" doc:id="ca82d9b8-1c63-4a6f-8a51-e94a0cb6c820" />
 		<flow-ref doc:name="sys-user-api-post-createusers" doc:id="6e0d82ee-eb9a-4b1e-8a1f-0f93078ac465" name="sys-user-api-post-createusers"/>
+		<set-variable value="201" doc:name="httpStatus" doc:id="ec1ac700-9089-4372-89cf-444f77075c5c" variableName="httpStatus"/>
 		<logger level="INFO" doc:name="End" doc:id="7b46ee53-aa7d-449d-8340-666155b4fa24" message="End Create User #[payload]" category="${log.info}" />
 	</sub-flow>
 	<sub-flow name="impl-user-create-users:subflow" doc:id="564c55ac-4e0f-4943-af15-742fffd1bc49" >
 		<logger level="INFO" doc:name="Start" doc:id="f8dd1e01-637c-43c9-aec7-c9fd4234dcce" message="Start Create Users #[payload]" category="${log.info}" />
 		<set-payload value="#[payload.users]" doc:name="Set Create User Payload" doc:id="a2e25bc5-ea9b-4377-89ef-252f2c34e33e" />
 		<flow-ref doc:name="sys-user-api-post-createusers" doc:id="52684e48-2c5c-41fb-91e4-76d43202760a" name="sys-user-api-post-createusers"/>
+		<set-variable value="202" doc:name="httpStatus" doc:id="e614b8b1-e5e5-4bb9-806f-cbec352cc26f" variableName="httpStatus"/>
 		<logger level="INFO" doc:name="End" doc:id="4db243ee-2269-44a4-a667-df1a34ba5326" message="End Create Users #[payload]" category="${log.info}" />
 	</sub-flow>
 </mule>

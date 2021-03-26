@@ -21,23 +21,58 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="impl-user-create-users:subflow" doc:id="b2a2a9b0-e54a-448c-b7f2-cf64d4b8c293" >
 		<logger level="INFO" doc:name="Start" doc:id="b1ca2b73-fd44-418c-bc89-7a830a70e741" message="Start Create User #[payload]" category="${log.info}" />
 		<flow-ref doc:name="sys-db-get-next-available-user-record:flow" doc:id="a8a26617-8748-40f6-b8e6-717917bd5a33" name="sys-db-get-next-available-user-record:flow" target="nextAvailableRecord"/>
-		<try doc:name="Try" doc:id="3c9e0eed-8922-4d45-8c0d-7772b3e99f4e" transactionalAction="BEGIN_OR_JOIN" transactionType="XA">
 			<foreach doc:name="For Each User" doc:id="e09d15d2-1cac-4520-9ce8-bc0fee9c7ff5" collection="#[payload]">
-				<set-variable value="#[payload]" doc:name="createUserPayload" doc:id="4c576226-f662-4afd-901e-ab34a0a9a2dc" variableName="createUserPayload" />
-				<set-payload value="#[output application/java&#10;---&#10;{&#10;	userid: vars.nextAvailableRecord,&#10;	dateRegistered: vars.createUserPayload.dateRegistered&#10;}]" doc:name="Insert User Record" doc:id="9dfaeb61-bf57-4f4a-a71c-d403fcc1ad60" />
-				<flow-ref doc:name="sys-db-insert-user-record:subflow" doc:id="6c2ef0f1-2941-410b-9e7a-b51e71ecb9ca" name="sys-db-insert-user-record:subflow" />
-				<set-payload value="#[output application/java&#10;---&#10;{&#10;	username: vars.createUserPayload.username,&#10;	active: Mule::p('params.user.active'),&#10;	userid: vars.nextAvailableRecord&#10;}]" doc:name="Insert Account Record" doc:id="bb0ad71d-a1ce-4164-b9a5-7c9261c096fe" />
-				<flow-ref doc:name="sys-db-insert-account-record:subflow" doc:id="adf4b843-3408-43ca-9712-bb2c8872afe0" name="sys-db-insert-account-record:subflow" />
-				<set-payload value="#[output application/java&#10;---&#10;{&#10;	fullname: vars.createUserPayload.fullName,&#10;	birthday: vars.createUserPayload.birthday,&#10;	gender: p('params.gender.' ++ vars.createUserPayload.gender),&#10;	userid: vars.nextAvailableRecord&#10;}]" doc:name="User Details Record" doc:id="47c68150-0f9b-46f6-9005-c4b547603a40" />
-				<flow-ref doc:name="sys-db-insert-user-details-record:subflow" doc:id="336d38db-889b-45c7-8899-e37b3592fcbb" name="sys-db-insert-user-details-record:subflow" />
-				<set-variable value="#[vars.nextAvailableRecord+1]" doc:name="Increment nextAvailableRecord" doc:id="c3759918-688d-4a68-9105-e98318a5bdbe" variableName="nextAvailableRecord" />
+				<async doc:name="Async"
+					doc:id="ca3358e8-8226-43d6-8723-6d57e642ef8e">
+					<try doc:name="Try" doc:id="54f8eed5-5600-4ebc-a3d9-c3bfd09270c1">
+						<logger level="INFO" doc:name="Start Async"
+							doc:id="de833d6e-1ea1-495a-a7fe-604e7b1bb774"
+							message="Start Async: #[vars.nextAvailableRecord] | #[payload]"
+							category="${log.info}" />
+						<set-variable value="#[payload]"
+							doc:name="createUserPayload"
+							doc:id="4c576226-f662-4afd-901e-ab34a0a9a2dc"
+							variableName="createUserPayload" />
+						<set-payload
+							value="#[output application/java&#10;---&#10;{&#10;	userid: vars.nextAvailableRecord,&#10;	dateRegistered: vars.createUserPayload.dateRegistered&#10;}]"
+							doc:name="Insert User Record"
+							doc:id="9dfaeb61-bf57-4f4a-a71c-d403fcc1ad60" />
+						<flow-ref doc:name="sys-db-insert-user-record:subflow"
+							doc:id="6c2ef0f1-2941-410b-9e7a-b51e71ecb9ca"
+							name="sys-db-insert-user-record:subflow" />
+						<set-payload
+							value="#[output application/java&#10;---&#10;{&#10;	username: vars.createUserPayload.username,&#10;	active: Mule::p('params.user.active'),&#10;	userid: vars.nextAvailableRecord&#10;}]"
+							doc:name="Insert Account Record"
+							doc:id="bb0ad71d-a1ce-4164-b9a5-7c9261c096fe" />
+						<flow-ref doc:name="sys-db-insert-account-record:subflow"
+							doc:id="adf4b843-3408-43ca-9712-bb2c8872afe0"
+							name="sys-db-insert-account-record:subflow" />
+						<set-payload
+							value="#[output application/java&#10;---&#10;{&#10;	fullname: vars.createUserPayload.fullName,&#10;	birthday: vars.createUserPayload.birthday,&#10;	gender: p('params.gender.' ++ vars.createUserPayload.gender),&#10;	userid: vars.nextAvailableRecord&#10;}]"
+							doc:name="User Details Record"
+							doc:id="47c68150-0f9b-46f6-9005-c4b547603a40" />
+						<flow-ref
+							doc:name="sys-db-insert-user-details-record:subflow"
+							doc:id="336d38db-889b-45c7-8899-e37b3592fcbb"
+							name="sys-db-insert-user-details-record:subflow" />
+						<logger level="INFO" doc:name="End Async"
+							doc:id="e0d51e13-4bc6-4c60-b546-a65c8d3cdb24"
+							message="End Async: #[vars.nextAvailableRecord] | #[payload]"
+							category="${log.info}" />
+						<error-handler>
+							<on-error-continue enableNotifications="true"
+								logException="true" doc:name="On Error Continue"
+								doc:id="dda0e71d-a3e7-49d7-867f-317c0cca55a6">
+								<logger level="ERROR" doc:name="Error"
+									doc:id="a6806a33-a7aa-4447-869c-bbf5b998a5cf"
+									message="Error: #[error.description]" category="${log.error}" />
+							</on-error-continue>
+						</error-handler>
+					</try>
+				</async>
+			<set-variable value="#[vars.nextAvailableRecord+1]" doc:name="Increment nextAvailableRecord" doc:id="c3759918-688d-4a68-9105-e98318a5bdbe" variableName="nextAvailableRecord" />
 			</foreach>
-			<error-handler>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="616f86c2-fa56-4ddb-b768-b7d9c072f7d6">
-					<logger level="ERROR" doc:name="Error" doc:id="0779a127-74cd-454c-8ef7-56da1f379701" message="nextAvailableRecord: #[vars.nextAvailableRecord] | Rollback due to error: #[error.detailedDescription]" category="${log.error}" />
-				</on-error-propagate>
-			</error-handler>
-		</try>
+		<set-variable value="202" doc:name="httpStatus" doc:id="731e8f51-80fa-40f5-a5c9-13ec2ff0bd08" variableName="httpStatus"/>
 		<set-payload value="#[output application/json&#10;---&#10;{&#10;	message: p('messages.responses.success')&#10;}]" doc:name="Success Response" doc:id="ff641b50-82d9-45df-a24a-944d1e936de2" />
 		<logger level="INFO" doc:name="End" doc:id="4faae630-603d-40f1-8776-a7472ceda675" message="End Create User #[payload]" category="${log.info}" />
 	</sub-flow>

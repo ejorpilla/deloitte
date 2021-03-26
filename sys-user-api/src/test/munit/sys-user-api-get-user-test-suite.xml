@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sys-user-api-get-user-test-suite.xml" />
+	<munit:test name="sys-user-api-get-user-test-suite:test-user-found" doc:id="276a7ac0-7cc3-4179-9b0e-620e059e0a52" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock User" doc:id="46caca20-2ab0-4961-8806-8fa8c93e7ffe" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[readUrl("classpath://users/get-user.json")]' mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="73a9d12a-403b-413e-b0f8-58146f8ede6c" >
+				<munit:attributes value='{&#10;	"uriParams": {&#10;		"username": "test"&#10;	}&#10;}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="get:\users\(username):sys-user-api-config" doc:id="fce3a6da-7d29-4335-b84a-94a2809d1ca4" name="get:\users\(username):sys-user-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert Response" doc:id="9935de50-51de-430a-8ea6-96a8ab8d4936" actual="#[payload]" expected='#[readUrl("classpath://users/get-user.json")[0]]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sys-user-api-get-user-test-suite:test-user-not-found" doc:id="91c24171-ffdb-4e13-a746-edb3c6f554f5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock User" doc:id="6bb82927-def7-4af4-8a1c-5f35b231651e" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="af905e00-4732-4870-a4dc-cc85adb92233" >
+				<munit:attributes value='{&#10;	"uriParams": {&#10;		"username": "test"&#10;	}&#10;}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="get:\users\(username):sys-user-api-config" doc:id="0274e593-eeff-4957-afa0-d0c68ebd9804" name="get:\users\(username):sys-user-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert Response" doc:id="03fc6f02-d2d2-4e1e-8b1b-cd34fcfbc843" actual="#[payload.message]" expected="#[p('messages.responses.user-not-found')]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sys-user-api-get-user-test-suite:test-error" doc:id="d5cf6814-4e9b-400d-8ee4-614be747ebfc" expectedErrorType="DB:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock User" doc:id="67046013-08c3-46e8-a10b-ac9474ec207f" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="User" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="#['DB:CONNECTIVITY']" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="859088c8-f70f-435e-be84-02ccc6500e83" >
+				<munit:attributes value='{&#10;	"uriParams": {&#10;		"username": "test"&#10;	}&#10;}' encoding="UTF-8" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="get:\users\(username):sys-user-api-config" doc:id="a3e9a02d-8c5d-46a6-beb2-914991002e56" name="get:\users\(username):sys-user-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call - General Error Response" doc:id="a8e06147-b265-434b-a813-55df0c4dd220" processor="set-payload" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="General Error Response" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>
