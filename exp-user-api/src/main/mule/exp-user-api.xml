@@ -43,12 +43,12 @@ correlationId]]></ee:set-variable>
 		<flow-ref doc:name="sys-user-api-get-user" doc:id="3fc55d7e-8c11-42a7-bdaf-11326e044c42" name="sys-user-api-get-user"/>
     </flow>
     <flow name="get:\getUsers:exp-user-api-config">
-		<flow-ref doc:name="sys-user-api-get-users" doc:id="2ab72e04-06c8-4df1-9fee-7c31a12182e2" name="sys-user-api-get-users"/>
+		<flow-ref doc:name="impl-user-get-users:sub-flow" doc:id="2ab72e04-06c8-4df1-9fee-7c31a12182e2" name="impl-user-get-users:sub-flow"/>
     </flow>
     <flow name="post:\createUser:application\json:exp-user-api-config">
         <flow-ref doc:name="impl-user-create-user:subflow" doc:id="2a8fba22-9070-44a8-a143-fc33c6999928" name="impl-user-create-user:subflow"/>
     </flow>
     <flow name="post:\createUsers:application\json:exp-user-api-config">
-		<flow-ref doc:name="post:\createUsers:application\json:exp-user-api-config" doc:id="b654eb99-a35c-4bd7-9c41-036c9ffc0ae0" name="post:\createUsers:application\json:exp-user-api-config"/>
+		<flow-ref doc:name="impl-user-create-users:subflow" doc:id="b654eb99-a35c-4bd7-9c41-036c9ffc0ae0" name="impl-user-create-users:subflow"/>
     </flow>
 </mule>
