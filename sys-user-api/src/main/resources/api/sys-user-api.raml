@@ -1,0 +1,57 @@
+#%RAML 1.0
+title: sys-user-api
+
+uses:
+  commons-clientheaders: exchange_modules/a4d36569-50db-4c84-9236-85487d0e3d4f/traits-client/1.0.1/traits-client.raml
+resourceTypes:
+  standard-resource:
+    is: [ commons-clientheaders.has-client-credentials ]
+types:
+  user: !include exchange_modules/a4d36569-50db-4c84-9236-85487d0e3d4f/fragment-user/1.0.1/fragment-user.raml
+mediaType: application/json
+
+/users:
+  type: standard-resource
+  get:
+    description: Get Users from specific query parameters
+    queryParameters:
+      active:
+        type: boolean
+        required: false
+      fullName:
+        type: string
+        minLength: 5
+        maxLength: 100
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            items:
+              type: user
+  post:
+    description: Create User/s
+    body:
+      application/json:
+        items:
+          type: user
+          
+  /{username}:
+    get:
+      description: Get User by username
+      responses:
+        200:
+          body:
+            application/json:
+              type: user
+    delete:
+      description: Delete User by username
+    put:
+      description: Update User by username
+      body:
+        application/json:
+          type: user
+      
+
+      
+    

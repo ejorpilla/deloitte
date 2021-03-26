@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="impl-user-create-user:subflow" doc:id="25de2d86-0762-415c-a5fd-7312b4ca57f5" >
+		<logger level="INFO" doc:name="Start" doc:id="74e006ba-e7d7-402c-872d-863bfc5ff49b" message="Start Create User #[payload]" category="${log.info}" />
+		<set-payload value="#[output application/json&#10;---&#10;[] + payload]" doc:name="Set Create User Payload" doc:id="ca82d9b8-1c63-4a6f-8a51-e94a0cb6c820" />
+		<flow-ref doc:name="sys-user-api-post-createusers" doc:id="6e0d82ee-eb9a-4b1e-8a1f-0f93078ac465" name="sys-user-api-post-createusers"/>
+		<logger level="INFO" doc:name="End" doc:id="7b46ee53-aa7d-449d-8340-666155b4fa24" message="End Create User #[payload]" category="${log.info}" />
+	</sub-flow>
+	<sub-flow name="impl-user-create-users:subflow" doc:id="564c55ac-4e0f-4943-af15-742fffd1bc49" >
+		<logger level="INFO" doc:name="Start" doc:id="f8dd1e01-637c-43c9-aec7-c9fd4234dcce" message="Start Create Users #[payload]" category="${log.info}" />
+		<set-payload value="#[payload.users]" doc:name="Set Create User Payload" doc:id="a2e25bc5-ea9b-4377-89ef-252f2c34e33e" />
+		<flow-ref doc:name="sys-user-api-post-createusers" doc:id="52684e48-2c5c-41fb-91e4-76d43202760a" name="sys-user-api-post-createusers"/>
+		<logger level="INFO" doc:name="End" doc:id="4db243ee-2269-44a4-a667-df1a34ba5326" message="End Create Users #[payload]" category="${log.info}" />
+	</sub-flow>
+</mule>

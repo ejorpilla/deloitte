@@ -1,0 +1,9 @@
+log:
+  info: "log.info"
+  error: "log.error"
+  
+messages:
+  responses:
+    error.general: "System Error"
+    success: "Success"
+  

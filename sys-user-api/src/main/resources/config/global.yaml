@@ -1,0 +1,26 @@
+log:
+  info: "log.info"
+  error: "log.error"
+  
+queries:
+  user:
+    select-user: "select username, fullname, birthday, gender, date_registered as dateRegistered from mydb.userdetails, mydb.user, mydb.account where mydb.userdetails.fk_userdetails_userid = mydb.user.pk_userid and mydb.account.fk_account_userid = mydb.user.pk_userid and active = 1 and username = :username"
+    select-users: "select username, fullname, birthday, gender, date_registered as dateRegistered from mydb.userdetails, mydb.user, mydb.account where mydb.userdetails.fk_userdetails_userid = mydb.user.pk_userid and mydb.account.fk_account_userid = mydb.user.pk_userid and active = 1"
+    select-next-available-user-record: "select (pk_userid + 1) as userid from mydb.user order by pk_userid desc limit 1"
+    insert-user-record: "insert into mydb.user (pk_userid, date_registered) values (:userid, :dateRegistered)"
+    insert-account-record: "insert into mydb.account (username, active, fk_account_userid) values (:username, :active, :userid)"
+    insert-userdetails-record: "insert into mydb.userdetails (fullname, birthday, gender, fk_userdetails_userid) values (:fullname, :birthday, :gender, :userid)"
+    
+messages:
+  responses:
+    user-not-found: "User not found"
+    error.general: "System Error"
+    success: "Success"
+    
+params:
+  user:
+    active: "1"
+    inactive: "0"
+  gender:
+    MALE: "M"
+    FEMALE: "F"

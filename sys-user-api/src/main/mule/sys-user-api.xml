@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <flow name="sys-user-api-main">
+        <http:listener config-ref="sys-user-api-httpListenerConfig" path="${connections.listener.basepath}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sys-user-api-config" />
+		<error-handler ref="error-handler-apikit" />
+    </flow>
+    <flow name="put:\users\(username):application\json:sys-user-api-config">
+        <logger level="INFO" message="put:\users\(username):application\json:sys-user-api-config" />
+    </flow>
+    <flow name="delete:\users\(username):sys-user-api-config">
+        <logger level="INFO" message="delete:\users\(username):sys-user-api-config" />
+    </flow>
+    <flow name="get:\users:sys-user-api-config">
+		<flow-ref doc:name="sys-db-get-users:flow" doc:id="2d385751-c677-4335-920d-e9d3b2b051e3" name="sys-db-get-users:flow"/>
+    </flow>
+    <flow name="get:\users\(username):sys-user-api-config">
+        <set-variable value="#[attributes.uriParams.'username']" doc:name="username" doc:id="5edcbced-9e9b-4917-8381-89e69a2a901a" variableName="username"/>
+		<flow-ref doc:name="impl-user-get-user:subflow" doc:id="34d2d42e-faf1-4f37-9f3e-4d4fa1302856" name="impl-user-get-user:subflow"/>
+    </flow>
+    <flow name="post:\users:application\json:sys-user-api-config">
+        <flow-ref doc:name="impl-user-create-users:subflow" doc:id="5b207028-657e-49c2-a8f9-624d137b120e" name="impl-user-create-users:subflow"/>
+    </flow>
+</mule>

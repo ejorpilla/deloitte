@@ -1,0 +1,11 @@
+#%RAML 1.0 DataType
+
+properties:
+  users:
+    type: array
+    required: true
+    minItems: 1
+    items:
+      type: !include exchange_modules/a4d36569-50db-4c84-9236-85487d0e3d4f/fragment-user/1.0.1/fragment-user.raml
+
+

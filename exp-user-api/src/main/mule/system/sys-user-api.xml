@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="sys-user-api-get-user" doc:id="2334d542-78cb-4b5b-a40c-4e16da1bb3fe" >
+		<logger level="INFO" doc:name="Start" doc:id="30b8d7da-f949-4330-86b4-97b80882e91c" message="Start Get User #[vars.username]" category="${log.info}" />
+		<http:request method="GET" doc:name="Get User" doc:id="a5bd83b1-f18e-473b-801a-0fa6da4b7c96" config-ref="HTTP_Request_configuration_sys_user_api" path="${connections.sys_user_api.path.get-user}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	clientId : vars.clientId,
+	clientSecret : vars.clientSecret
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	username : vars.username
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="End" doc:id="28d4e0e6-1565-46e5-aa01-aaf55a5cc6df" message="End Get User: #[payload]" category="${log.info}" />
+	</sub-flow>
+	<sub-flow name="sys-user-api-get-users" doc:id="a8062e9a-f446-41d1-b2ea-67a732bdf953" >
+		<logger level="INFO" doc:name="Start" doc:id="3a3d0026-6f1a-42fa-be5f-986cf666f054" message="Start Get Users #[vars.username]" category="${log.info}" />
+		<http:request method="GET" doc:name="Get User" doc:id="b81d62f4-7dd7-49d0-be00-d15a6cde02db" config-ref="HTTP_Request_configuration_sys_user_api" path="${connections.sys_user_api.path.get-users}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	clientId : vars.clientId,
+	clientSecret : vars.clientSecret
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="End" doc:id="6067a8e4-5511-424b-be3f-c5fb6512b95a" message="End Get Users: #[payload]" category="${log.info}" />
+	</sub-flow>
+	<sub-flow name="sys-user-api-post-createusers" doc:id="4d1cda4a-d606-4258-ba8d-63cd63308104" >
+		<logger level="INFO" doc:name="Start" doc:id="e7f38ccb-b846-45bb-ae41-6247e8dd889b" message="Start Create Users #[vars.username]" category="${log.info}" />
+		<http:request method="POST" doc:name="Create User" doc:id="114cf2f1-4a52-4e5f-a4a9-c09021981894" config-ref="HTTP_Request_configuration_sys_user_api" path="${connections.sys_user_api.path.post-create-user}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	clientId : vars.clientId,
+	clientSecret : vars.clientSecret
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="End" doc:id="70aa4926-4159-4873-b844-b5195ea7645a" message="End Create Users: #[payload]" category="${log.info}" />
+	</sub-flow>
+</mule>

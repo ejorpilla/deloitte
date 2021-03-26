@@ -1,0 +1,26 @@
+#%RAML 1.0 DataType
+
+properties:
+  username:
+    type: string
+    maxLength: 45
+    minLength: 5
+    required: true
+  active:
+    type: boolean
+    required: false
+  dateRegistered:
+    type: date-only
+    required: true
+  fullName:
+    type: string
+    maxLength: 100
+    required: true
+  birthday:
+    type: date-only
+    required: true
+  gender:
+    type: string
+    enum:
+      - MALE
+      - FEMALE

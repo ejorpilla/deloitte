@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="exp-user-api-main">
+        <http:listener config-ref="exp-user-api-httpListenerConfig" path="${connections.listener.basepath}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Set Metadata Vars" doc:id="347132d0-beb0-42b3-baa2-d54e843be319" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="clientId" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.uriparams.clientId]]></ee:set-variable>
+				<ee:set-variable variableName="clientSecret" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.headers.uriparams.clientSecret]]></ee:set-variable>
+				<ee:set-variable variableName="trackingId" ><![CDATA[%dw 2.0
+output application/java
+---
+correlationId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="exp-user-api-config" />
+		<error-handler ref="error-handler-apikit" />
+    </flow>
+    <flow name="put:\update\(username):application\json:exp-user-api-config">
+        <logger level="INFO" message="put:\update\(username):application\json:exp-user-api-config" />
+    </flow>
+    <flow name="delete:\delete\(username):exp-user-api-config">
+        <logger level="INFO" message="delete:\delete\(username):exp-user-api-config" />
+    </flow>
+    <flow name="get:\getUser\(username):exp-user-api-config">
+        <set-variable value="#[attributes.uriParams.'username']" doc:name="username" doc:id="06e79943-3fce-4907-b61f-e3ad54002e4b" variableName="username"/>
+		<flow-ref doc:name="sys-user-api-get-user" doc:id="3fc55d7e-8c11-42a7-bdaf-11326e044c42" name="sys-user-api-get-user"/>
+    </flow>
+    <flow name="get:\getUsers:exp-user-api-config">
+		<flow-ref doc:name="sys-user-api-get-users" doc:id="2ab72e04-06c8-4df1-9fee-7c31a12182e2" name="sys-user-api-get-users"/>
+    </flow>
+    <flow name="post:\createUser:application\json:exp-user-api-config">
+        <flow-ref doc:name="impl-user-create-user:subflow" doc:id="2a8fba22-9070-44a8-a143-fc33c6999928" name="impl-user-create-user:subflow"/>
+    </flow>
+    <flow name="post:\createUsers:application\json:exp-user-api-config">
+		<flow-ref doc:name="post:\createUsers:application\json:exp-user-api-config" doc:id="b654eb99-a35c-4bd7-9c41-036c9ffc0ae0" name="post:\createUsers:application\json:exp-user-api-config"/>
+    </flow>
+</mule>
