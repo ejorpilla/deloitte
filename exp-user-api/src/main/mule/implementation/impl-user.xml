@@ -3,6 +3,18 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="impl-user-get-user:subflow" doc:id="1b88a0da-80a1-4632-bd80-c0dbeb0693bc" >
+		<logger level="INFO" doc:name="Start" doc:id="0378c2f3-32f8-435f-94ed-d09789747cd1" message="Start Create User #[payload]" category="${log.info}" />
+		<flow-ref doc:name="sys-user-api-get-user" doc:id="d6029648-85ca-40f3-96e8-be9da26afe15" name="sys-user-api-get-user" />
+		<logger level="INFO" doc:name="End" doc:id="0ee244f1-4363-45a7-85d2-697db306eeaf" message="End Create User #[payload]" category="${log.info}" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6119ba4b-a946-4477-8331-00126deeb4c0">
+					<logger level="ERROR" doc:name="User Not Found" doc:id="0ad743cc-e881-487a-a5b0-710d70c75952" message="User Not Found #[vars.username]" category="${log.error}" />
+					<set-variable value="#[vars.httpStatus]" doc:name="httpStatus" doc:id="dff94ee3-176b-4443-9a63-7ceebc4680d7" variableName="httpStatus" />
+					<set-payload value="#[output application/json&#10;---&#10;{&#10;	trackingId: vars.trackingId,&#10;	message:&#10;		if ((error.muleMessage.typedValue.message default '') != '')&#10;			error.muleMessage.typedValue.message&#10;		else&#10;			error.detailedDescription&#10;}]" doc:name="Set Error Message Payload" doc:id="15e7a6da-69bf-440e-b2f3-a562948cfa91" />
+				</on-error-continue>
+		</error-handler>
+	</flow>
 	<sub-flow name="impl-user-create-user:subflow" doc:id="25de2d86-0762-415c-a5fd-7312b4ca57f5" >
 		<logger level="INFO" doc:name="Start" doc:id="74e006ba-e7d7-402c-872d-863bfc5ff49b" message="Start Create User #[payload]" category="${log.info}" />
 		<set-payload value="#[output application/json&#10;---&#10;[] + payload]" doc:name="Set Create User Payload" doc:id="ca82d9b8-1c63-4a6f-8a51-e94a0cb6c820" />

@@ -4,7 +4,7 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<sub-flow name="sys-user-api-get-user" doc:id="2334d542-78cb-4b5b-a40c-4e16da1bb3fe" >
+	<flow name="sys-user-api-get-user" doc:id="2334d542-78cb-4b5b-a40c-4e16da1bb3fe" >
 		<logger level="INFO" doc:name="Start" doc:id="30b8d7da-f949-4330-86b4-97b80882e91c" message="Start Get User #[vars.username]" category="${log.info}" />
 		<http:request method="GET" doc:name="Get User" doc:id="a5bd83b1-f18e-473b-801a-0fa6da4b7c96" config-ref="HTTP_Request_configuration_sys_user_api" path="${connections.sys_user_api.path.get-user}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">
 			<http:headers ><![CDATA[#[output application/java
@@ -20,7 +20,14 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 }]]]></http:uri-params>
 		</http:request>
 		<logger level="INFO" doc:name="End" doc:id="28d4e0e6-1565-46e5-aa01-aaf55a5cc6df" message="End Get User: #[payload]" category="${log.info}" />
-	</sub-flow>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="606c6944-547c-48cb-b577-7bf04ec2342a" type="HTTP:NOT_FOUND">
+				<logger level="ERROR" doc:name="User Not Found" doc:id="98b811d1-adb9-4e8a-b01c-a7c52ad955b8" message="User Not Found #[vars.username]" category="${log.error}" />
+				<set-variable value="404" doc:name="httpStatus" doc:id="64696575-a6e0-471e-84fd-1ff0caa38864" variableName="httpStatus"/>
+				<set-payload value="#[output application/json&#10;---&#10;{&#10;	trackingId: vars.trackingId,&#10;	message:&#10;		if ((error.muleMessage.typedValue.message default '') != '')&#10;			error.muleMessage.typedValue.message&#10;		else&#10;			error.detailedDescription&#10;}]" doc:name="Set Error Message Payload" doc:id="53d64f1f-e440-4521-894f-13e68f79ebb5" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
 	<sub-flow name="sys-user-api-get-users" doc:id="a8062e9a-f446-41d1-b2ea-67a732bdf953" >
 		<logger level="INFO" doc:name="Start" doc:id="3a3d0026-6f1a-42fa-be5f-986cf666f054" message="Start Get Users #[vars.username]" category="${log.info}" />
 		<http:request method="GET" doc:name="Get User" doc:id="b81d62f4-7dd7-49d0-be00-d15a6cde02db" config-ref="HTTP_Request_configuration_sys_user_api" path="${connections.sys_user_api.path.get-users}" sendCorrelationId="ALWAYS" correlationId="#[correlationId]">

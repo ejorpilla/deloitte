@@ -1,11 +1,6 @@
 #%RAML 1.0
 title: exp-user-api
 
-uses:
-  commons-clientheaders: exchange_modules/a4d36569-50db-4c84-9236-85487d0e3d4f/traits-client/1.0.1/traits-client.raml
-resourceTypes:
-  standard-resource:
-    is: [ commons-clientheaders.has-client-credentials ]
 types:
   user: !include exchange_modules/a4d36569-50db-4c84-9236-85487d0e3d4f/fragment-user/1.0.1/fragment-user.raml
   collection-users: !include datatypes/collection-users.raml
@@ -17,8 +12,10 @@ securitySchemes:
       This API supports Basic Authentication.
     type: Basic Authentication
 
+securedBy:
+  - basic
+
 /getUser/{username}:
-  type: standard-resource
   get:
     description: Get Users by username
     responses:
@@ -28,7 +25,6 @@ securitySchemes:
               type: user
 
 /getUsers:
-  type: standard-resource
   get:
     description: Get Users from specific query parameters
     queryParameters:
